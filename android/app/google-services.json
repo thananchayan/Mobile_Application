@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "185025997591",
+    "project_id": "happy-event-78a5c",
+    "storage_bucket": "happy-event-78a5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185025997591:android:0a666442f134112f8d6552",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByDlBdP7zV7xTrAzmUPvFYKl1J56jv1GM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
