@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app/Addsellerdetails.dart';
+import 'package:mobile_app/Addseller_package_details.dart';
 import 'package:mobile_app/Edit_seller%20profile.dart';
-import 'package:mobile_app/Editsellerdetails.dart';
+import 'package:mobile_app/Editseller_package_details.dart';
 import 'package:mobile_app/login1.dart';
 
 class WidgetModel {
@@ -12,7 +12,9 @@ class WidgetModel {
   WidgetModel({required this.title});
 
   Map<String, dynamic> toMap() {
-    return {'title': title};
+    return {
+      'title': title,
+    };
   }
 }
 
@@ -22,13 +24,7 @@ class sellerDashboard extends StatefulWidget {
 }
 
 class _SellerDashboardState extends State<sellerDashboard> {
-  List<WidgetModel> widgets = [
-    WidgetModel(title: "Briyani"),
-    WidgetModel(title: "Fried Rice"),
-    WidgetModel(title: "Dolphin"),
-    WidgetModel(title: "Photographer"),
-  ];
-
+  List<WidgetModel> widgets = [];
   WidgetModel? selectedWidget;
 
   final seller = FirebaseAuth.instance.currentUser!;
@@ -55,10 +51,23 @@ class _SellerDashboardState extends State<sellerDashboard> {
 
         setState(() {
           _companyNameController.text = sellerData['company'] ?? '';
+
+          // Clear the existing widgets
+          widgets.clear();
+
+          // Add package names to the widgets list
+          List<dynamic>? packageDetails = sellerData['packageDetails'];
+          if (packageDetails != null) {
+            for (var package in packageDetails) {
+              widgets.add(WidgetModel(title: package['packagename'] ?? ''));
+            }
+          }
+
+          print('Widgets: $widgets');
         });
       }
     } catch (e) {
-      print('Error fetching buyer data: $e');
+      print('Error fetching seller data: $e');
     }
   }
 
@@ -67,8 +76,39 @@ class _SellerDashboardState extends State<sellerDashboard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Really??"),
+          title: const Text("Logout!"),
           content: const Text("Are you want to Logout?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text("No"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
+
+    return exitApp ?? false;
+  }
+
+  Future<bool?> _applyConfirmationdeletepackage(BuildContext context) async {
+    bool? exitApp = await showDialog<bool?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Confirm Delete",
+            style: TextStyle(fontSize: 20, color: Colors.red),
+          ),
+          content: const Text("Are you want to Delete this package?"),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -94,7 +134,21 @@ class _SellerDashboardState extends State<sellerDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seller'),
+        title: Container(
+          child: Builder(
+            builder: (context) => MouseRegion(
+              child: Text(
+                _companyNameController.text,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+        // SizedBox(width: 5),
         backgroundColor: Colors.indigo,
         actions: [
           IconButton(
@@ -102,23 +156,39 @@ class _SellerDashboardState extends State<sellerDashboard> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Addsellerdetails()),
+                MaterialPageRoute(
+                    builder: (context) => Addseller_package_details()),
               );
             },
           ),
           IconButton(
             icon: Icon(Icons.delete),
-            onPressed: () {
-              deleteSelectedWidget();
+            onPressed: () async {
+              bool? confirmdeletepackage =
+                  await _applyConfirmationdeletepackage(context);
+
+              if (confirmdeletepackage != null && confirmdeletepackage) {
+                deleteSelectedWidget();
+              }
             },
           ),
           IconButton(
             icon: Icon(Icons.update),
             onPressed: () {
+              if (selectedWidget == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please select a package to edit'),
+                  ),
+                );
+                return;
+              }
               if (selectedWidget != null) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Editsellerdetails()),
+                  MaterialPageRoute(
+                      builder: (context) => Editseller_package_details(
+                          packageDetails: selectedWidget)),
                 );
               }
             },
@@ -150,7 +220,6 @@ class _SellerDashboardState extends State<sellerDashboard> {
                     ),
                     SizedBox(width: 10),
                     Container(
-                      //  width: 100, // Adjust the width as needed
                       child: Builder(
                         builder: (context) => MouseRegion(
                           child: Text(
@@ -203,7 +272,6 @@ class _SellerDashboardState extends State<sellerDashboard> {
                       await _applyConfirmationlogoutseller(context);
 
                   if (confirmEdit != null && confirmEdit) {
-                    // Handle the tap event, for example, navigate to a new page
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Login1()),
@@ -217,7 +285,7 @@ class _SellerDashboardState extends State<sellerDashboard> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          color: Colors.white,
+          color: Colors.grey[200],
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
           child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -271,12 +339,50 @@ class _SellerDashboardState extends State<sellerDashboard> {
     );
   }
 
-  void deleteSelectedWidget() {
+  void deleteSelectedWidget() async {
     if (selectedWidget != null) {
-      setState(() {
-        widgets.remove(selectedWidget);
-        selectedWidget = null;
-      });
+      try {
+        // Get the current user
+        User? seller = FirebaseAuth.instance.currentUser;
+
+        // Fetch the current seller data
+        DocumentSnapshot sellerSnapshot = await FirebaseFirestore.instance
+            .collection("seller_details")
+            .doc(seller?.uid)
+            .get();
+
+        if (sellerSnapshot.exists) {
+          Map<String, dynamic> sellerData =
+              sellerSnapshot.data() as Map<String, dynamic>;
+
+          // Find the package to be deleted in the packageDetails list
+          List<dynamic>? packageDetails = sellerData['packageDetails'];
+          if (packageDetails != null) {
+            var packageToRemove = packageDetails.firstWhere(
+                (package) => package['packagename'] == selectedWidget!.title,
+                orElse: () => null);
+
+            // Remove the package from the list
+            if (packageToRemove != null) {
+              packageDetails.remove(packageToRemove);
+
+              // Update the Firestore document
+              await FirebaseFirestore.instance
+                  .collection('seller_details')
+                  .doc(seller?.uid)
+                  .update({'packageDetails': packageDetails});
+            }
+          }
+        }
+
+        // Remove the widget from the UI
+        setState(() {
+          widgets.remove(selectedWidget);
+          selectedWidget = null;
+        });
+      } catch (e) {
+        print('Error deleting package: $e');
+      }
     }
   }
 }

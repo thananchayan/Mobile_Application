@@ -18,16 +18,27 @@ class seller_signup extends StatefulWidget {
 class _LoginScreenState extends State<seller_signup> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String _email = '',
-      _service = '',
       _contactno = '',
       _password = '',
       _confirmPassword = '',
       _company = '';
+  String? _selectedService;
+  bool isLoading = false;
 
   XFile? image;
 
+  List<String> services = [
+    'Food',
+    'Decorations',
+    'Beautician',
+    'Photographer',
+  ];
+
   Future<void> _signUp() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       // Create user in FirebaseAuth
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _email.trim(),
@@ -46,7 +57,7 @@ class _LoginScreenState extends State<seller_signup> {
           .doc(user?.uid)
           .set({
         'email': _email.trim(),
-        'service': _service,
+        'service': _selectedService,
         'contactno': _contactno,
         'company': _company,
         'imageUrl': imageUrl,
@@ -64,6 +75,10 @@ class _LoginScreenState extends State<seller_signup> {
           backgroundColor: Colors.red,
         ),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -195,6 +210,17 @@ class _LoginScreenState extends State<seller_signup> {
                               ),
                             ),
                           ),
+                          isLoading
+                              ? Center(
+                                  child: SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF207D4A),
+                                    ),
+                                  ),
+                                )
+                              : Container(),
                           const SizedBox(height: 20),
                           GestureDetector(
                             onTap: getImage,
@@ -249,18 +275,21 @@ class _LoginScreenState extends State<seller_signup> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          TextFormField(
-                            onSaved: (value) {
-                              _service = value ?? '';
-                            },
-                            validator: (service) {
-                              if (service?.isEmpty ?? true) {
-                                return "Please enter your service";
-                              }
-                              return null;
+                          DropdownButtonFormField<String>(
+                            value: _selectedService,
+                            items: services.map((service) {
+                              return DropdownMenuItem<String>(
+                                value: service,
+                                child: Text(service),
+                              );
+                            }).toList(),
+                            onChanged: (String? value) {
+                              setState(() {
+                                _selectedService = value;
+                              });
                             },
                             decoration: InputDecoration(
-                              hintText: "Service",
+                              hintText: "Select Service",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(18),
                                 borderSide: BorderSide.none,

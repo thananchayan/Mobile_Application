@@ -14,7 +14,7 @@ class _Edit_seller_profieState extends State<Edit_seller_profie> {
   final seller = FirebaseAuth.instance.currentUser!;
   TextEditingController _companyNameController = TextEditingController();
   TextEditingController _contactNumberController = TextEditingController();
-  TextEditingController _serviceController = TextEditingController();
+//  TextEditingController _serviceController = TextEditingController();
   //TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -39,7 +39,7 @@ class _Edit_seller_profieState extends State<Edit_seller_profie> {
         setState(() {
           _companyNameController.text = sellerData['company'] ?? '';
           _contactNumberController.text = sellerData['contactno'] ?? '';
-          _serviceController.text = sellerData['service'] ?? '';
+          // _serviceController.text = sellerData['service'] ?? '';
         });
       }
     } catch (e) {
@@ -52,7 +52,10 @@ class _Edit_seller_profieState extends State<Edit_seller_profie> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Really??"),
+          title: const Text(
+            "Edit Account",
+            style: TextStyle(color: Colors.blue),
+          ),
           content: const Text("Are you want to Edit?"),
           actions: <Widget>[
             TextButton(
@@ -83,7 +86,7 @@ class _Edit_seller_profieState extends State<Edit_seller_profie> {
           .update({
         'company': _companyNameController.text,
         'contactno': _contactNumberController.text,
-        'service': _serviceController.text,
+        //'service': _serviceController.text,
       });
 
       // Show a success message or navigate to another screen if needed
@@ -156,19 +159,6 @@ class _Edit_seller_profieState extends State<Edit_seller_profie> {
                               fillColor: Colors.blue.withOpacity(0.1),
                               filled: true,
                               prefixIcon: const Icon(Icons.shop)),
-                        ),
-                        const SizedBox(height: 20),
-                        TextField(
-                          controller: _serviceController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                                borderSide: BorderSide.none),
-                            fillColor: Colors.blue.withOpacity(0.1),
-                            filled: true,
-                            prefixIcon:
-                                const Icon(Icons.medical_services_outlined),
-                          ),
                         ),
                         const SizedBox(height: 20),
                         TextField(

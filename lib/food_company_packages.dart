@@ -6,19 +6,19 @@ import 'package:mobile_app/food_package_more.dart';
 import 'package:mobile_app/login1.dart';
 
 class food_company_packages extends StatefulWidget {
-  List imgdata = [
+  List packageimg = [
     "assets/food.jpg",
     "assets/food.jpg",
     "assets/food.jpg",
     "assets/food.jpg",
-    "assets/food.jpg"
+    "assets/food.jpg",
   ];
-  List titles = [
-    "Briyani",
-    "Fried Rice",
-    "Dolphin",
-    "Photographer",
-    "Photographer"
+  List packagenames = [
+    "package1",
+    "package2",
+    "package3",
+    "package4",
+    "package5"
   ];
 
   @override
@@ -57,6 +57,18 @@ class _food_company_packagesState extends State<food_company_packages> {
       }
     } catch (e) {
       print('Error fetching buyer data: $e');
+    }
+  }
+
+  Widget _buildPackageItem(int index) {
+    if (widget.packageimg.length > index &&
+        widget.packageimg[index].isNotEmpty) {
+      return Image.asset(
+        widget.packageimg[index],
+        width: 300,
+      );
+    } else {
+      return Container(); // Placeholder widget if image does not exist
     }
   }
 
@@ -150,14 +162,6 @@ class _food_company_packagesState extends State<food_company_packages> {
                             SizedBox(
                               height: 10,
                             ),
-                            Text(
-                              "Last update aug 07",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white54,
-                                letterSpacing: 1,
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -181,31 +185,19 @@ class _food_company_packagesState extends State<food_company_packages> {
                     ),
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: widget.imgdata.length,
+                    itemCount: widget.packagenames.length,
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
                           // Check the index and navigate accordingly
-                          switch (index) {
-                            case 0:
-                              // Navigate to the first page
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FoodPackageMore(),
-                                ),
-                              );
-                              break;
-                            case 1:
-                              // Navigate to the second page
-                              break;
-                            case 2:
-                              // Navigate to the third page
-                              break;
-                            case 3:
-                              // Navigate to the fourth page
-                              break;
-                          }
+
+                          // Navigate to the first page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FoodPackageMore(),
+                            ),
+                          );
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(
@@ -226,12 +218,9 @@ class _food_company_packagesState extends State<food_company_packages> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Image.asset(
-                                widget.imgdata[index],
-                                width: 100,
-                              ),
+                              _buildPackageItem(index),
                               Text(
-                                widget.titles[index],
+                                widget.packagenames[index],
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,

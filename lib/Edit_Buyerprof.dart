@@ -15,6 +15,7 @@ class _Edit_BuyerprofState extends State<Edit_Buyerprof> {
   final buyer = FirebaseAuth.instance.currentUser!;
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _contactNumberController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _Edit_BuyerprofState extends State<Edit_Buyerprof> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Really??"),
+          title: const Text("Confirm to Edit?"),
           content: const Text("Are you want to Edit?"),
           actions: <Widget>[
             TextButton(

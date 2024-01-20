@@ -15,9 +15,12 @@ class Login1 extends StatefulWidget {
 class _LoginScreenState extends State<Login1> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String _email = '', _password = '';
-
+  bool isLoading = false;
   void signIn(BuildContext context) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       UserCredential authUser = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _email, password: _password);
 
@@ -42,26 +45,37 @@ class _LoginScreenState extends State<Login1> {
         );
       }
     } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Credential is incorrect."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print('Error: $e');
       // Handle authentication errors
-      if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("User not found. Please check your email."),
-          ),
-        );
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Incorrect password. Please try again."),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("An error occurred. Please try again later."),
-          ),
-        );
-      }
+      // if (e.code == 'user-not-found') {
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text("credential is incorrect."),
+      //   ),
+      // );
+      // } else if (e.code == 'wrong-password') {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text("Incorrect password. Please try again."),
+      //     ),
+      //   );
+      // } else {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text("An error occurred. Please try again later."),
+      //     ),
+      //   );
+      // }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -110,29 +124,34 @@ class _LoginScreenState extends State<Login1> {
     return SafeArea(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: Container(
-              margin: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    height: 300,
-                    width: 300,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage("assets/logo.png"),
+        home: Builder(
+          builder: (BuildContext scaffoldContext) {
+            // Wrap the entire Scaffold with a Builder
+            return Scaffold(
+              body: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        height: 300,
+                        width: 300,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/logo.png"),
+                          ),
+                        ),
                       ),
-                    ),
+                      _inputField(scaffoldContext),
+                      _forgotPassword(scaffoldContext),
+                      _signup(scaffoldContext),
+                    ],
                   ),
-                  _inputField(context),
-                  _forgotPassword(context),
-                  _signup(context),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -215,6 +234,18 @@ class _LoginScreenState extends State<Login1> {
                   style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
+              SizedBox(height: 10),
+              isLoading
+                  ? Center(
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF207D4A),
+                        ),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ),

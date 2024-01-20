@@ -1,68 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app/Edit_Buyerprof.dart';
 import 'package:mobile_app/food_company_packages.dart';
-import 'package:mobile_app/login1.dart';
 
-class food_buyerpack extends StatefulWidget {
-  List imgdata = [
-    "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg"
-  ];
-  List titles = ["Hajiar", "gadabi", "Thaj", "Moulavi", "Moulavi"];
-  List ratings = [5.0, 4.0, 3.0, 3.5, 4.0];
+class food_buyerpack extends StatelessWidget {
+  final List<String> imgdata;
+  final List<String> company_names;
+  late double height, width;
 
-  @override
-  State<food_buyerpack> createState() => _food_buyerpackState();
-}
-
-class _food_buyerpackState extends State<food_buyerpack> {
-  late double height, width; // Declare height and width here
-
-  final buyer = FirebaseAuth.instance.currentUser!;
-  TextEditingController _userNameController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    fetchBuyerData();
-  }
-
-  Future<void> fetchBuyerData() async {
-    try {
-      DocumentSnapshot buyerSnapshot = await FirebaseFirestore.instance
-          .collection("buyer_details")
-          .doc(buyer.uid)
-          .get();
-
-      if (buyerSnapshot.exists) {
-        Map<String, dynamic> buyerData =
-            buyerSnapshot.data() as Map<String, dynamic>;
-
-        print('Buyer Data: $buyerData');
-
-        setState(() {
-          _userNameController.text = buyerData['username'] ?? '';
-        });
-      }
-    } catch (e) {
-      print('Error fetching buyer data: $e');
-    }
-  }
+  food_buyerpack(this.imgdata, this.company_names);
 
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-
     return SafeArea(
       child: Scaffold(
         body: Container(
-          color: Colors.indigo, // Change the background color to indigo
+          color: Colors.indigo,
           width: width,
           child: Column(
             children: [
@@ -74,7 +27,7 @@ class _food_buyerpackState extends State<food_buyerpack> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  iconSize: 30, // Adjust the size as needed
+                  iconSize: 30,
                 ),
               ),
               Container(
@@ -95,8 +48,7 @@ class _food_buyerpackState extends State<food_buyerpack> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              // Open drawer when the logo is pressed
-                              // _scaffoldKey.currentState?.openEndDrawer();
+                              // Do something when the logo is pressed
                             },
                             child: Container(
                               height: 50,
@@ -111,26 +63,6 @@ class _food_buyerpackState extends State<food_buyerpack> {
                             ),
                           ),
                           SizedBox(width: 5),
-                          Container(
-                            // Adjust the width as needed
-                            child: Text(
-                              _userNameController.text,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            "logged in",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Colors.white,
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -154,14 +86,6 @@ class _food_buyerpackState extends State<food_buyerpack> {
                           SizedBox(
                             height: 10,
                           ),
-                          // Text(
-                          //   "Last update aug 07",
-                          //   style: TextStyle(
-                          //     fontSize: 16,
-                          //     color: Colors.white54,
-                          //     letterSpacing: 1,
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
@@ -179,7 +103,7 @@ class _food_buyerpackState extends State<food_buyerpack> {
                         topRight: Radius.circular(30),
                       ),
                     ),
-                    width: width,
+                    // width: width,
                     padding: EdgeInsets.only(bottom: 20),
                     child: GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -189,34 +113,17 @@ class _food_buyerpackState extends State<food_buyerpack> {
                       ),
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: widget.imgdata.length,
+                      itemCount: company_names.length,
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
-                            switch (index) {
-                              case 0:
-                                // Navigate to the first page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        food_company_packages(),
-                                  ),
-                                );
-                                break;
-                              case 1:
-                                // Navigate to the second page
-
-                                break;
-                              case 2:
-                                // Navigate to the third page
-
-                                break;
-                              case 3:
-                                // Navigate to the fourth page
-
-                                break;
-                            }
+                            // Navigate to the next page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => food_company_packages(),
+                              ),
+                            );
                           },
                           child: Container(
                             margin: EdgeInsets.symmetric(
@@ -237,18 +144,16 @@ class _food_buyerpackState extends State<food_buyerpack> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Image.asset(
-                                  widget.imgdata[index],
-                                  width: 100,
-                                ),
+                                _buildImage(imgdata.length > index
+                                    ? imgdata[index]
+                                    : null),
                                 Text(
-                                  widget.titles[index],
+                                  company_names[index],
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                StarRating(rating: widget.ratings[index]),
                               ],
                             ),
                           ),
@@ -264,33 +169,15 @@ class _food_buyerpackState extends State<food_buyerpack> {
       ),
     );
   }
-}
 
-class StarRating extends StatelessWidget {
-  final double rating;
-
-  StarRating({required this.rating});
-
-  @override
-  Widget build(BuildContext context) {
-    int numberOfFullStars = rating.floor();
-    int numberOfHalfStars = ((rating - numberOfFullStars) * 2).round();
-
-    return Row(
-      children: List.generate(
-            numberOfFullStars,
-            (index) => Icon(
-              Icons.star,
-              color: Colors.yellow,
-            ),
-          ) +
-          List.generate(
-            numberOfHalfStars,
-            (index) => Icon(
-              Icons.star_half,
-              color: Colors.yellow,
-            ),
-          ),
-    );
+  Widget _buildImage(String? imagePath) {
+    if (imagePath != null && imagePath.isNotEmpty) {
+      return Image.asset(
+        imagePath,
+        width: 100,
+      );
+    } else {
+      return Container(); // Placeholder widget if image does not exist
+    }
   }
 }

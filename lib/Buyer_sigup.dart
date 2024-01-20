@@ -19,8 +19,13 @@ class _LoginScreenState extends State<Buyer_signup> {
       _confirmPassword = '',
       _username = '';
 
+  bool isLoading = false;
+
   Future<void> _signUp() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _email.trim(),
         password: _password,
@@ -55,6 +60,10 @@ class _LoginScreenState extends State<Buyer_signup> {
           backgroundColor: Colors.red,
         ),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -101,6 +110,17 @@ class _LoginScreenState extends State<Buyer_signup> {
                       ),
                     ],
                   ),
+                  isLoading
+                      ? Center(
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF207D4A),
+                            ),
+                          ),
+                        )
+                      : Container(),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
