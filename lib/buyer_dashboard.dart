@@ -9,9 +9,9 @@ class buyer_dashboard extends StatefulWidget {
   List<String> titles = ["Food", "Decorations", "Beautician", "Photographer"];
   List<String> imgdata = [
     "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg",
+    "assets/deco.jpg",
+    "assets/beauty.jpg",
+    "assets/photo.jpg",
   ];
 
   @override

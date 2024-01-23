@@ -2,9 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/food_company_packages.dart';
 
 class food_buyerpack extends StatelessWidget {
-  final List<String> imgdata;
+  // final List<String> imgdata;
   final List<String> company_names;
   late double height, width;
+
+  // List<String> company_names = [
+  //   "Food",
+  //   "Decorations",
+  //   "Beautician",
+  //   "Photographer"
+  // ];
+  List<String> imgdata = [
+    "assets/food.jpg",
+    "assets/deco.jpg",
+    "assets/beauty.jpg",
+    "assets/photo.jpg",
+  ];
 
   food_buyerpack(this.imgdata, this.company_names);
 

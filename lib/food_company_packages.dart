@@ -8,10 +8,10 @@ import 'package:mobile_app/login1.dart';
 class food_company_packages extends StatefulWidget {
   List packageimg = [
     "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg",
-    "assets/food.jpg",
+    "assets/food1.png",
+    "assets/food2.png",
+    "assets/food3.png",
+    "assets/food4.png",
   ];
   List packagenames = [
     "package1",
